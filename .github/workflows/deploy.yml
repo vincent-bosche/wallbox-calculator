@@ -40,4 +40,4 @@ jobs:
           port: ${{ secrets.STRATO_SFTP_PORT || 22 }}
           password: ${{ secrets.STRATO_SFTP_PASSWORD }}
           sourceDir: ./.output/public/
-          targetDir: /wallbox
+          targetDir: /wallbox/
