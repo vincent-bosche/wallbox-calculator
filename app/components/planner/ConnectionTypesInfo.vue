@@ -16,8 +16,8 @@ const connectionTypes = [
     description: 'Blaue (einphasig, 3,7 kW) oder rote (dreiphasig, bis 22 kW) Industriesteckdose. Höhere Leistung als Schuko, aber die Steckverbindung ist ebenfalls nicht für dauerhafte hohe Lasten zertifiziert und daher nur als Übergangslösung empfehlenswert.'
   },
   {
-    title: 'Festinstallierte Wallbox mit Typ-2-Anschluss (11 oder 22 kW)',
-    description: 'Die empfohlene Lösung fürs regelmäßige Laden. Bringt eigene Sicherheitstechnik mit (Fehlerstromschutz, Lastüberwachung) und lässt sich mit Lademanagement sowie PV-Kopplung (Smart Charging) kombinieren.'
+    title: 'Festinstallierte Wallbox mit Typ-2-Anschluss (ein- oder dreiphasig, 3,7 kW bis 11 oder 22 kW)',
+    description: 'Die empfohlene Lösung fürs regelmäßige Laden. Kann je nach Hausanschluss und Bedarf einphasig (geringere Leistung) oder dreiphasig (bis 11 bzw. 22 kW) ausgeführt werden. Bringt eigene Sicherheitstechnik mit (Fehlerstromschutz, Lastüberwachung) und lässt sich mit Lademanagement sowie PV-Kopplung (Smart Charging) kombinieren.'
   }
 ]
 </script>
@@ -37,11 +37,11 @@ const connectionTypes = [
       <template #content>
         <div class="space-y-6 pt-4 text-sm text-muted">
           <section class="space-y-3">
-            <h3 class="font-medium text-highlighted">
+            <h3 class="text-xl font-medium text-highlighted">
               Die drei Anschlussarten
             </h3>
-            <div v-for="type in connectionTypes" :key="type.title" class="space-y-1">
-              <p class="font-medium text-highlighted">
+            <div v-for="type in connectionTypes" :key="type.title" class="space-y-2 mb-6">
+              <p class="text-lg font-medium text-highlighted">
                 {{ type.title }}
               </p>
               <p>{{ type.description }}</p>
