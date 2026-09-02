@@ -32,7 +32,7 @@ const seasonTabItems = SEASONS.map(season => ({
     <VehiclesSection />
 
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold text-highlighted">
+      <h2 class="text-2xl font-semibold text-highlighted">
         Ergebnis
       </h2>
       <UTabs :items="seasonTabItems" default-value="summer" variant="pill">

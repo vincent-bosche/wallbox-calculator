@@ -135,7 +135,7 @@ function tickX(h: number) {
         stroke-dasharray="4 3"
       />
 
-      <g class="text-[9px] fill-muted">
+      <g class="text-[9px] fill-muted fill-current">
         <text
           v-for="h in HOUR_TICKS"
           :key="h"
