@@ -39,5 +39,5 @@ jobs:
           host: ${{ secrets.STRATO_SFTP_HOST }}
           port: ${{ secrets.STRATO_SFTP_PORT || 22 }}
           password: ${{ secrets.STRATO_SFTP_PASSWORD }}
-          sourceDir: './.output/public/*'
-          targetDir: '/wallbox'
+          sourceDir: ./.output/public/
+          targetDir: /wallbox/
