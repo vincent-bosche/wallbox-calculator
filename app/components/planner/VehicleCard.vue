@@ -3,6 +3,8 @@ import type { Vehicle } from '~/types/planner'
 import { vehicleBufferDays } from '~/utils/planner/calculations'
 import {
   BATTERY_CAPACITY_QUICK_VALUES,
+  BUFFER_SOC_MAX,
+  BUFFER_SOC_MIN,
   CONSUMPTION_QUICK_VALUES,
   DAILY_DISTANCE_QUICK_VALUES,
   MAX_AC_POWER_QUICK_VALUES,
@@ -22,6 +24,9 @@ const bufferDaysBySeason = computed(() => SEASONS.map(season => ({
   label: SEASON_LABELS[season],
   days: vehicleBufferDays(props.vehicle, season)
 })))
+
+const usableBufferSharePercent = Math.round((BUFFER_SOC_MAX - BUFFER_SOC_MIN) * 100)
+const usableBufferKwh = computed(() => props.vehicle.batteryCapacityKwh * (BUFFER_SOC_MAX - BUFFER_SOC_MIN))
 </script>
 
 <template>
@@ -130,19 +135,37 @@ const bufferDaysBySeason = computed(() => SEASONS.map(season => ({
                 :max="150"
                 :step="1"
               />
-              <p class="mt-2 flex flex-wrap items-center gap-1 text-sm text-muted">
-                Tage ohne Laden (10–80 % Akku):
-                <FormulaInfo title="Tage ohne Laden (10–80 % Akku)">
-                  <p><code>Nutzbarer Batteriepuffer ÷ täglicher Fahrverbrauch</code>.</p>
-                  <p><strong>Nutzbarer Batteriepuffer:</strong> <code>Batteriekapazität × (80 % − 10 %)</code> – nur dieser Bereich wird als alltagstauglich angenommen (Akku-Schonung).</p>
-                  <p><strong>Täglicher Fahrverbrauch:</strong> <code>Tagesfahrleistung × Verbrauch/100&nbsp;km × Saisonfaktor ÷ 100</code> (ohne Ladeverluste – reiner Batteriefüllstand, nicht der Netzbezug beim Laden).</p>
-                </FormulaInfo>
-                <span
-                  v-for="(entry, index) in bufferDaysBySeason"
-                  :key="entry.season"
-                  class="text-highlighted font-medium"
-                >{{ index > 0 ? ' · ' : ' ' }}{{ entry.label }} {{ entry.days.toFixed(1) }} T.</span>
-              </p>
+              <div class="mt-2 space-y-1.5 text-sm text-muted">
+                <p class="flex flex-wrap items-center gap-1">
+                  Tage ohne Laden ({{ (BUFFER_SOC_MIN * 100).toFixed(0) }}–{{ (BUFFER_SOC_MAX * 100).toFixed(0) }} % Akku)
+                  <FormulaInfo title="Tage ohne Laden (10–80 % Akku)">
+                    <p><code>Nutzbarer Batteriepuffer ÷ täglicher Fahrverbrauch</code>.</p>
+                    <p><strong>Nutzbarer Batteriepuffer:</strong> <code>Batteriekapazität × (80 % − 10 %)</code> – nur dieser Bereich wird als alltagstauglich angenommen (Akku-Schonung).</p>
+                    <p><strong>Täglicher Fahrverbrauch:</strong> <code>Tagesfahrleistung × Verbrauch/100&nbsp;km × Saisonfaktor ÷ 100</code> (ohne Ladeverluste – reiner Batteriefüllstand, nicht der Netzbezug beim Laden).</p>
+                  </FormulaInfo>
+                  <span>– {{ usableBufferSharePercent }} % Nutzpuffer = <span class="font-medium text-highlighted">{{ usableBufferKwh.toFixed(1) }} kWh</span></span>
+                </p>
+                <table class="w-full border-collapse text-left">
+                  <thead>
+                    <tr>
+                      <th
+                        v-for="entry in bufferDaysBySeason"
+                        :key="entry.season"
+                        class="border-b border-default pb-1 pr-3 font-normal"
+                      >{{ entry.label }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td
+                        v-for="entry in bufferDaysBySeason"
+                        :key="entry.season"
+                        class="pr-3 pt-1 font-medium text-highlighted"
+                      >{{ entry.days.toFixed(1) }} T.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </UFormField>
           </div>
         </template>

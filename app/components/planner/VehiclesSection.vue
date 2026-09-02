@@ -9,7 +9,7 @@ const sharedConnectionHint = computed(() => getSharedConnectionHint(state.value.
 <template>
   <section class="space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-highlighted">
+      <h2 class="text-xl font-semibold text-highlighted">
         Fahrzeuge
       </h2>
       <UButton

@@ -1,13 +1,21 @@
 <script setup lang="ts">
+import type { Preset } from '~/utils/planner/presets'
 import { PRESETS } from '~/utils/planner/presets'
 
+const emit = defineEmits<{ select: [] }>()
+
 const { loadPreset } = useWallboxPlanner()
+
+function selectPreset(preset: Preset) {
+  loadPreset(preset)
+  emit('select')
+}
 </script>
 
 <template>
   <section class="space-y-4">
     <div>
-      <h2 class="text-lg font-semibold text-highlighted">
+      <h2 class="text-xl font-semibold text-highlighted">
         Beispiel-Situationen
       </h2>
       <p class="text-sm text-muted">
@@ -24,7 +32,7 @@ const { loadPreset } = useWallboxPlanner()
         :icon="preset.icon"
         spotlight
         class="cursor-pointer text-left"
-        @click="loadPreset(preset)"
+        @click="selectPreset(preset)"
       />
     </div>
   </section>
