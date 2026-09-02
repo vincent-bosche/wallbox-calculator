@@ -29,7 +29,7 @@ jobs:
         run: pnpm run generate
         env:
           NODE_ENV: production
-          NUXT_APP_BASE_URL: /wallbox
+          NUXT_APP_BASE_URL: /
 
       - name: Deploy to Strato via SFTP
 #        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
@@ -40,4 +40,4 @@ jobs:
           port: ${{ secrets.STRATO_SFTP_PORT || 22 }}
           password: ${{ secrets.STRATO_SFTP_PASSWORD }}
           sourceDir: ./.output/public/
-          targetDir: /wallbox/
+          targetDir: /wallbox
