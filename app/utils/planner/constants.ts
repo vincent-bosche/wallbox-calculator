@@ -20,11 +20,14 @@ export const SEASON_CONSUMPTION_FACTOR: Record<SeasonKey, number> = {
 
 export const CHARGING_LOSS = 0.1
 
-// Anteil des PV-Jahresertrags, der auf die jeweilige Saison entfällt (Faustwerte Deutschland).
+// Anteil des PV-Jahresertrags, der auf die jeweilige Saison entfällt (Faustwerte Deutschland,
+// abgeglichen mit realen Ertragsdaten sowie PV-Forum-Vergleichswerten). Sommer/Winter sind
+// über verschiedene Anlagen hinweg recht stabil, die Übergangsmonate (v. a. März) schwanken
+// je nach Jahr stark - siehe wallbox-planer-konzept.md.
 export const SEASON_PV_YIELD_SHARE: Record<SeasonKey, number> = {
-  summer: 0.45,
-  transition: 0.35,
-  winter: 0.2
+  summer: 0.57,
+  transition: 0.34,
+  winter: 0.09
 }
 
 // Tageslichtstunden je Saison, für die normierte Erzeugungskurve in der Naiv/Smart-Simulation.
