@@ -37,6 +37,7 @@ function formatOption(value: number) {
       :min="min"
       :max="max"
       :step="step"
+      locale="de-DE"
       size="sm"
       class="w-32"
       :class="isCustom && 'ring-2 ring-primary rounded-md'"

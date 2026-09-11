@@ -15,6 +15,12 @@ useSeoMeta({
   title: 'Wallbox-Planer',
   description: 'Finde heraus, welche Ladeleistung du für deine Wallbox wirklich brauchst – abhängig von Fahrverhalten, Fahrzeugen und PV-Anlage, getrennt nach Sommer, Übergangszeit und Winter.'
 })
+
+const navItems = [
+  { label: 'Start', to: '/' },
+  { label: 'Wallbox-Planer', to: '/wallbox' },
+  { label: 'Auto Kostenvergleich', to: '/auto-kostenvergleich' }
+]
 </script>
 
 <template>
@@ -29,6 +35,8 @@ useSeoMeta({
           Wallbox-Planer
         </NuxtLink>
       </template>
+
+      <UNavigationMenu :items="navItems" />
 
       <template #right>
         <UColorModeButton />

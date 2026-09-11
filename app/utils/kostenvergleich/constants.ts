@@ -1,0 +1,12 @@
+export const ANNUAL_DISTANCE_QUICK_VALUES = [10000, 15000, 20000, 30000]
+
+export const HOME_PRICE_QUICK_VALUES = [25, 28, 32, 36]
+export const PUBLIC_PRICE_QUICK_VALUES = [42, 49, 55, 65]
+
+export const THG_PREMIUM_QUICK_VALUES = [100, 200, 300, 400]
+
+export const FUEL_PRICE_QUICK_VALUES = [1.6, 1.9, 2, 2.2, 2.4]
+export const COMBUSTION_TAX_QUICK_VALUES = [60, 120, 180, 240]
+
+export const COMPARISON_YEARS = [1, 2, 3, 4, 5, 6, 7]
+export const HIGHLIGHT_YEARS = [5, 7]

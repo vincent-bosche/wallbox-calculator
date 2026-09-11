@@ -14,11 +14,14 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   components: [
-    { path: '~/components/planner', pathPrefix: false }
+    { path: '~/components/planner', pathPrefix: false },
+    { path: '~/components/kostenvergleich', pathPrefix: false }
   ],
 
   routeRules: {
-    '/': { prerender: true }
+    '/': { prerender: true },
+    '/wallbox': { prerender: true },
+    '/auto-kostenvergleich': { prerender: true }
   },
 
   compatibilityDate: '2026-06-30',
