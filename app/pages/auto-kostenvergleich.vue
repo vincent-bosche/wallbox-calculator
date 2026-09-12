@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { ANNUAL_DISTANCE_QUICK_VALUES } from '~/utils/kostenvergleich/constants'
+import {
+  ANNUAL_DISTANCE_QUICK_VALUES,
+  FUEL_PRICE_QUICK_VALUES,
+  HOME_PRICE_QUICK_VALUES,
+  PUBLIC_PRICE_QUICK_VALUES
+} from '~/utils/kostenvergleich/constants'
 
 useSeoMeta({
   title: 'Auto Kostenvergleich – Wallbox-Planer',
@@ -7,6 +12,8 @@ useSeoMeta({
 })
 
 const { state } = useKostenvergleich()
+
+const homeSharePercent = computed(() => Math.round(state.value.ev.homeShare * 100))
 
 const ergebnisSectionEl = useTemplateRef('ergebnisSection')
 const isErgebnisSectionVisible = ref(false)
@@ -40,16 +47,56 @@ onMounted(() => {
     </div>
 
     <UCard>
-      <UFormField label="Jahresfahrleistung (km)">
-        <QuickSelectField
-          v-model="state.annualDistanceKm"
-          :options="ANNUAL_DISTANCE_QUICK_VALUES"
-          unit="km"
-          :min="1000"
-          :max="100000"
-          :step="500"
-        />
-      </UFormField>
+      <div class="space-y-5">
+        <UFormField label="Jahresfahrleistung (km)">
+          <QuickSelectField
+            v-model="state.annualDistanceKm"
+            :options="ANNUAL_DISTANCE_QUICK_VALUES"
+            unit="km"
+            :min="1000"
+            :max="100000"
+            :step="500"
+          />
+        </UFormField>
+
+        <UFormField label="Strompreis zuhause (ct/kWh)">
+          <QuickSelectField
+            v-model="state.ev.homePriceCtKwh"
+            :options="HOME_PRICE_QUICK_VALUES"
+            unit="ct/kWh"
+            :min="10"
+            :max="80"
+            :step="1"
+          />
+        </UFormField>
+
+        <UFormField label="Strompreis unterwegs (ct/kWh)" description="Öffentliche Ladesäule/Schnelllader.">
+          <QuickSelectField
+            v-model="state.ev.publicPriceCtKwh"
+            :options="PUBLIC_PRICE_QUICK_VALUES"
+            unit="ct/kWh"
+            :min="10"
+            :max="100"
+            :step="1"
+          />
+        </UFormField>
+
+        <UFormField label="Kraftstoffpreis (€/l)">
+          <QuickSelectField
+            v-model="state.combustion.fuelPriceEurL"
+            :options="FUEL_PRICE_QUICK_VALUES"
+            unit="€"
+            :min="1"
+            :max="3"
+            :step="0.01"
+            :decimals="2"
+          />
+        </UFormField>
+
+        <UFormField :label="`Anteil zuhause geladen: ${homeSharePercent} %`">
+          <USlider v-model="state.ev.homeShare" :min="0" :max="1" :step="0.05" />
+        </UFormField>
+      </div>
     </UCard>
 
     <section ref="ergebnisSection" class="space-y-4">

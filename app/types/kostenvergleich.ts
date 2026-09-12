@@ -8,6 +8,7 @@ export interface EvInput {
   homeShare: number
   annualTaxEur: number
   thgPremiumEur: number
+  powerPs?: number
 }
 
 export interface CombustionInput {
@@ -16,6 +17,7 @@ export interface CombustionInput {
   consumptionL100km: number
   fuelPriceEurL: number
   annualTaxEur: number
+  powerPs?: number
 }
 
 export interface KostenvergleichState {

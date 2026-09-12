@@ -80,12 +80,14 @@ const breakEvenExtras = computed(() => {
         <table class="w-full text-sm">
           <thead>
             <tr class="text-xs uppercase tracking-wide text-muted">
-              <th class="py-2 text-left font-normal hidden">Posten</th>
+              <th class="py-2 text-left font-normal"><span class="hidden">Posten</span></th>
               <th class="max-w-[8rem] truncate py-2 text-right font-normal" :title="state.ev.vehicleName">
                 {{ state.ev.vehicleName }}
+                <span v-if="state.ev.powerPs" class="block normal-case text-[10px] text-muted">{{ state.ev.powerPs }} PS</span>
               </th>
               <th class="max-w-[8rem] truncate py-2 text-right font-normal" :title="state.combustion.vehicleName">
                 {{ state.combustion.vehicleName }}
+                <span v-if="state.combustion.powerPs" class="block normal-case text-[10px] text-muted">{{ state.combustion.powerPs }} PS</span>
               </th>
               <th class="py-2 text-right font-normal">
                 Differenz
@@ -123,12 +125,14 @@ const breakEvenExtras = computed(() => {
         <table class="w-full text-sm">
           <thead>
             <tr class="text-xs uppercase tracking-wide text-muted">
-              <th class="py-2 text-left font-normal hidden">Posten</th>
+              <th class="py-2 text-left font-normal"><span class="hidden">Posten</span></th>
               <th class="max-w-[8rem] truncate py-2 text-right font-normal" :title="state.ev.vehicleName">
                 {{ state.ev.vehicleName }}
+                <span v-if="state.ev.powerPs" class="block normal-case text-[10px] text-muted">{{ state.ev.powerPs }} PS</span>
               </th>
               <th class="max-w-[8rem] truncate py-2 text-right font-normal" :title="state.combustion.vehicleName">
                 {{ state.combustion.vehicleName }}
+                <span v-if="state.combustion.powerPs" class="block normal-case text-[10px] text-muted">{{ state.combustion.powerPs }} PS</span>
               </th>
               <th class="py-2 text-right font-normal">
                 Differenz

@@ -5,11 +5,13 @@ const props = withDefaults(defineProps<{
   min?: number
   max?: number
   step?: number
+  decimals?: number
 }>(), {
   unit: '',
   min: 0,
   max: 1000,
-  step: 1
+  step: 1,
+  decimals: 0
 })
 
 const modelValue = defineModel<number>({ required: true })
@@ -17,7 +19,10 @@ const modelValue = defineModel<number>({ required: true })
 const isCustom = computed(() => !props.options.includes(modelValue.value))
 
 function formatOption(value: number) {
-  return props.unit ? `${value} ${props.unit}` : `${value}`
+  const formatted = props.decimals > 0
+    ? value.toLocaleString('de-DE', { minimumFractionDigits: props.decimals, maximumFractionDigits: props.decimals })
+    : `${value}`
+  return props.unit ? `${formatted} ${props.unit}` : formatted
 }
 </script>
 
