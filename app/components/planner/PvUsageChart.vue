@@ -8,7 +8,16 @@ const props = defineProps<{
   // Fester Anzeigebereich (z. B. der Sommer-Tag), damit Sommer/Übergang/Winter-Diagramme
   // denselben Ausschnitt zeigen und vergleichbar bleiben. Ohne Angabe: eigener Tag-Bereich.
   range?: DaylightRange
+  // Für die "Genutzt (smart)"-Legende: gewählte Anschlussklasse und die daraus resultierende
+  // durchschnittliche Ladeleistung während der tatsächlichen Ladephasen (siehe ComparisonSection.vue).
+  connectionKw?: number
+  avgSmartPowerKw?: number
 }>()
+
+const smartUsageLabel = computed(() => {
+  if (!props.avgSmartPowerKw || !props.connectionKw) return 'Genutzt (smart)'
+  return `Genutzt (smart, Ø ${props.avgSmartPowerKw.toFixed(1)} von ${props.connectionKw} kW)`
+})
 
 const WIDTH = 480
 const HEIGHT = 140
@@ -18,7 +27,12 @@ const visibleRange = computed(() => props.range ?? computeDaylightRange(props.ho
 const rangeHours = computed(() => visibleRange.value.end - visibleRange.value.start + 1)
 const stepX = computed(() => WIDTH / rangeHours.value)
 
-const maxY = computed(() => Math.max(...props.hourly.pvGenKwh, props.hourly.householdLoadKwh, 0.1) * 1.15)
+const maxY = computed(() => Math.max(
+  ...props.hourly.pvGenKwh,
+  ...props.hourly.naiveCarTotalKwh,
+  props.hourly.householdLoadKwh,
+  0.1
+) * 1.15)
 
 function y(value: number) {
   return HEIGHT - (value / maxY.value) * HEIGHT
@@ -69,6 +83,14 @@ const smartWithBatteryKwh = computed(() =>
   props.hourly.smartCarKwh.map((v, h) => v + (props.hourly.smartBatteryByHour[h] ?? 0)))
 const smartBatteryBandPath = computed(() => bandPath(props.hourly.smartCarKwh, smartWithBatteryKwh.value))
 
+// Naiv lädt unabhängig von der PV-Erzeugung mit voller (gedeckelter) Anschlussleistung - reicht
+// die PV-Erzeugung (+ Akku) nicht aus, kommt der Rest aus dem Netz. Dieses Band zeigt genau
+// diesen Anteil oberhalb der reinen PV-Nutzung, damit "Genutzt (naiv)" die PV-Kurve sichtbar
+// übersteigen kann (z. B. 11 kW Ladeleistung bei nur wenigen kW PV-Ertrag).
+const hasNaiveExtra = computed(() =>
+  props.hourly.naiveCarTotalKwh.some((v, h) => v > (props.hourly.naiveCarKwh[h] ?? 0) + 0.0001))
+const naiveExtraBandPath = computed(() => bandPath(props.hourly.naiveCarKwh, props.hourly.naiveCarTotalKwh))
+
 const homeBands = computed(() => {
   const { start, end } = visibleRange.value
   const bands: { start: number, length: number }[] = []
@@ -103,7 +125,7 @@ function tickX(h: number) {
       <FormulaInfo title="PV-Tagesverlauf">
         <p>Normierte, glockenförmige Erzeugungskurve (<code>sin²</code>) mit Peak um 12:00, zentriert auf die saisonalen Tageslichtstunden (Sommer 15&nbsp;h · Übergang 12&nbsp;h · Winter 9&nbsp;h) und auf den saisonalen Tagesertrag skaliert. Reine Rechenkurve ohne Live-/Wetterdaten.</p>
         <p>Dargestellt wird nur der Tag-Bereich zwischen Sonnenaufgang und -untergang (erste/letzte Stunde mit Erzeugung &gt; 0 im Sommer) - Nachtstunden ohne Erzeugung sind ausgeblendet. Übergangszeit und Winter nutzen denselben Zeitausschnitt wie der Sommer, damit die drei Diagramme vergleichbar bleiben (dort bleibt es an den Rändern entsprechend dunkler).</p>
-        <p>„Genutzt" zeigt den Anteil davon, der laut Naiv- bzw. Smart-Simulation tatsächlich ans Auto ging – nicht die reine Überschussfläche über der Haushaltslast. Bei vorhandenem Hausakku kommt bei „Smart" oben ein Akku-Band dazu (Ladung aus dem Speicher oberhalb der Haushalts-Nachtreserve) - Naiv nutzt den Akku ebenfalls, wird hier aber nicht separat ausgewiesen (siehe Zusammensetzungs-Leiste oben für den Naiv-Wert).</p>
+        <p>„Genutzt" zeigt den Anteil davon, der laut Naiv- bzw. Smart-Simulation tatsächlich ans Auto ging – nicht die reine Überschussfläche über der Haushaltslast. Bei vorhandenem Hausakku kommt bei „Smart" oben ein Akku-Band dazu (Ladung aus dem Speicher oberhalb der Haushalts-Nachtreserve). Naiv lädt unabhängig von der PV-Erzeugung mit voller Anschlussleistung - reicht PV (+ Akku) nicht aus, wird der Rest aus dem Netz nachgeladen und als „Naiv zusätzlich (Akku/Netz)" oben angezeigt, wodurch der Naiv-Balken die PV-Kurve übersteigen kann (z. B. bei 11 kW Anschluss und geringerem PV-Ertrag).</p>
         <p>Die grauen Bänder markieren Stunden, in denen mindestens ein Fahrzeug zuhause ist (weniger als 30&nbsp;Minuten Abwesenheit in dieser Stunde).</p>
       </FormulaInfo>
     </p>
@@ -115,7 +137,7 @@ function tickX(h: number) {
         y="0"
         :width="band.length * stepX"
         :height="HEIGHT"
-        class="fill-muted"
+        class="fill-[var(--ui-bg-muted)]"
       />
 
       <path :d="pvAreaPath" class="fill-primary/10" />
@@ -124,18 +146,19 @@ function tickX(h: number) {
       <path :d="smartUsedAreaPath" class="fill-primary/35" />
       <path v-if="hasBatteryUsage" :d="smartBatteryBandPath" class="fill-warning/50" />
       <path :d="naiveUsedAreaPath" class="fill-primary/80" />
+      <path v-if="hasNaiveExtra" :d="naiveExtraBandPath" class="fill-error/40" />
 
       <line
         x1="0"
         :y1="householdY"
         :x2="WIDTH"
         :y2="householdY"
-        class="stroke-muted"
-        stroke-width="1"
+        class="stroke-[var(--ui-text-highlighted)]"
+        stroke-width="1.5"
         stroke-dasharray="4 3"
       />
 
-      <g class="text-[9px] fill-muted fill-current">
+      <g class="text-[9px] fill-[var(--ui-text-muted)]">
         <text
           v-for="h in HOUR_TICKS"
           :key="h"
@@ -153,11 +176,15 @@ function tickX(h: number) {
       </div>
       <div class="flex items-center gap-1.5">
         <span class="size-2.5 rounded-full bg-primary/35" />
-        Genutzt (smart)
+        {{ smartUsageLabel }}
       </div>
       <div class="flex items-center gap-1.5">
         <span class="size-2.5 rounded-full bg-primary/80" />
         Genutzt (naiv)
+      </div>
+      <div v-if="hasNaiveExtra" class="flex items-center gap-1.5">
+        <span class="size-2.5 rounded-full bg-error/40" />
+        Naiv zusätzlich (Akku/Netz)
       </div>
       <div v-if="hasBatteryUsage" class="flex items-center gap-1.5">
         <span class="size-2.5 rounded-full bg-warning/50" />
@@ -168,7 +195,7 @@ function tickX(h: number) {
         Fahrzeug zuhause
       </div>
       <div class="flex items-center gap-1.5">
-        <span class="h-0 w-3 border-t border-dashed border-muted" />
+        <span class="h-0 w-3 border-t border-dashed border-[var(--ui-text-highlighted)]" />
         Haushaltslast
       </div>
     </div>

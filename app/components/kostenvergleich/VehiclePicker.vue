@@ -35,11 +35,14 @@ function formatVariant(vehicle: EvVehicleOption | CombustionVehicleOption) {
         Fahrzeug-Auswahl
       </h2>
       <p class="text-sm text-muted">
-        Ein Fahrzeugpaar wählen, um Kaufpreis und Verbrauch beider Seiten vorzubefüllen – danach sind die Werte frei
-        anpassbar. Die Verbrauchswerte sind reale Durchschnittswerte (spritmonitor.de/ADAC Ecotest),
-        keine Herstellerangaben.<br>
+        Ein Fahrzeugpaar wählen, um Kaufpreis, Verbrauch und KFZ-Steuer beider Seiten vorzubefüllen – danach sind
+        die Werte frei anpassbar. Die Verbrauchswerte sind reale Testverbrauchswerte (ADAC Ecotest/Autotest,
+        Fachmagazine wie auto motor und sport/AUTO BILD oder spritmonitor.de), keine Herstellerangaben – der
+        offizielle WLTP-Wert ist zum Vergleich zusätzlich hinterlegt. Die KFZ-Steuer entspricht der offiziell
+        berechneten Kfz-Steuer je Modell.<br>
         Für den Vergleich wurde immer das günstigste Modell gewählt mit Serienausstattung.<br>
-        Es sind keine Herstellerrabatte oder Bonuszahlungen (E-Auto Prämie) eingerechnet.
+        Es sind keine Herstellerrabatte oder Bonuszahlungen (E-Auto Prämie) eingerechnet. Versicherung und
+        Wartung/Reparaturen sind nicht enthalten, da diese stark variieren.
       </p>
     </div>
 

@@ -65,6 +65,7 @@ export interface HourlySeriesResult {
   householdLoadKwh: number
   homeHours: boolean[]
   naiveCarKwh: number[]
+  naiveCarTotalKwh: number[]
   smartCarKwh: number[]
   smartBatteryByHour: number[]
 }

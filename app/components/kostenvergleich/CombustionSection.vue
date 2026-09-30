@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { COMBUSTION_TAX_QUICK_VALUES } from '~/utils/kostenvergleich/constants'
+import { VEHICLE_PAIR_PRESETS } from '~/utils/kostenvergleich/presets'
 
-const { state } = useKostenvergleich()
+const { state, selectedPairId } = useKostenvergleich()
+
+const selectedCombustionPreset = computed(() => VEHICLE_PAIR_PRESETS.find(p => p.id === selectedPairId.value)?.combustion)
 
 const eur = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
 </script>
@@ -10,7 +13,8 @@ const eur = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR',
   <UCard>
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-        <h2 class="text-lg font-semibold text-highlighted">
+        <h2 class="flex items-center gap-2 text-lg font-semibold text-highlighted">
+          <UIcon name="i-lucide-fuel" class="size-5 shrink-0" />
           {{ state.combustion.vehicleName }}
         </h2>
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
@@ -56,6 +60,18 @@ const eur = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR',
               size="sm"
               class="w-40"
             />
+            <p v-if="selectedCombustionPreset" class="mt-1 text-xs text-muted">
+              Testverbrauch:
+              <a
+                v-if="selectedCombustionPreset.consumptionUrl"
+                :href="selectedCombustionPreset.consumptionUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline hover:text-highlighted"
+              >{{ selectedCombustionPreset.consumptionL100km }} l/100 km</a>
+              <span v-else>{{ selectedCombustionPreset.consumptionL100km }} l/100 km</span>
+              · WLTP: {{ selectedCombustionPreset.consumptionWltpL100km }} l/100 km
+            </p>
           </UFormField>
 
           <UFormField label="KFZ-Steuer (€/Jahr)">

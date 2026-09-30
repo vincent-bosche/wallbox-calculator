@@ -7,9 +7,19 @@ export interface Vehicle {
   purchaseUrl?: string;
   consumptionUrl?: string;
 }
+export interface EvCapacityVariant {
+  variant: string
+  purchasePriceEur: number
+  consumptionKwh100km: number
+  consumptionWltpKwh100km: number
+  consumptionUrl?: string
+}
+
 export interface EvVehicleOption extends Vehicle {
   consumptionKwh100km: number
   consumptionWltpKwh100km: number
+  // Optionale größere Batterie/Long-Range-Variante desselben Modells, falls verfügbar.
+  largeBattery?: EvCapacityVariant
 }
 
 export interface CombustionVehicleOption extends Vehicle {
@@ -23,35 +33,261 @@ export interface CombustionVehicleOption extends Vehicle {
 // Bei sehr neu eingeführten Modellen (z. B. ID.7, ID.Buzz, CLA) liegen noch keine breiten Realwerte vor -
 // hier wurden die nächstliegenden verfügbaren Messwerte als Näherung verwendet.
 export const EV_VEHICLE_OPTIONS: EvVehicleOption[] = [
-  { id: 'id3', model: 'VW ID.3', variant: 'Neo Trend (50 kWh)', consumptionKwh100km: 19.2, consumptionWltpKwh100km: 14, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/vw/vw-id-3/', purchasePriceEur: 33995 },
-  { id: 'id4', model: 'VW ID.4', variant: 'Pure (58 kWh)', consumptionKwh100km: 22.8, consumptionWltpKwh100km: 15.9, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/vw/vw-id-4/', purchasePriceEur: 40580 },
-  { id: 'id7', model: 'VW ID.7', variant: 'Pro (77 kWh)', consumptionKwh100km: 18.1, consumptionWltpKwh100km: 14.6, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/vw/vw-id-7/', purchasePriceEur: 56995 },
+  {
+    id: 'id3',
+    model: 'VW ID.3',
+    variant: 'Neo Trend (50 kWh)',
+    consumptionKwh100km: 15.9,
+    consumptionWltpKwh100km: 14,
+    consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/vw/vw-id-3/',
+    purchasePriceEur: 33995,
+    // Realverbrauch genähert über den Ecotest der Vorgänger-Pro-S-Variante (77 kWh) - für die
+    // aktuelle Neo-Facelift-Generation (ab 07/26) liegt noch kein eigener Ecotest vor.
+    largeBattery: {
+      variant: 'Life (79 kWh)',
+      consumptionKwh100km: 16.1,
+      consumptionWltpKwh100km: 14.4,
+      purchasePriceEur: 44995,
+      consumptionUrl: 'https://ev-database.org/de/pkw/3522/Volkswagen-ID3-Neo-170-kW---79-kWh'
+    }
+  },
+  {
+    id: 'id4',
+    model: 'VW ID.4',
+    variant: 'Pure (58 kWh)',
+    consumptionKwh100km: 22.8,
+    consumptionWltpKwh100km: 15.9,
+    consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/vw/vw-id-4/',
+    purchasePriceEur: 40580,
+    largeBattery: {
+      variant: 'Pro (77 kWh)',
+      consumptionKwh100km: 22.8,
+      consumptionWltpKwh100km: 15.6,
+      purchasePriceEur: 46335,
+      consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/vw/id4/1generation/332632/'
+    }
+  },
+  {
+    id: 'id7',
+    model: 'VW ID.7',
+    variant: 'Pro (77 kWh)',
+    consumptionKwh100km: 18.1,
+    consumptionWltpKwh100km: 14.6,
+    consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/vw/vw-id-7/',
+    purchasePriceEur: 56995,
+    // Realverbrauch aus ADAC-Winterreichweitentest (kein klassischer Ecotest), einzige verfügbare Realmessung.
+    largeBattery: {
+      variant: 'Pro S (86 kWh)',
+      consumptionKwh100km: 20.9,
+      consumptionWltpKwh100km: 13.6,
+      purchasePriceEur: 59495,
+      consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/elektromobilitaet/elektroauto/e-auto-reichweiten-test-im-winter/volkswagen-id7-pro-s-id-4947/'
+    }
+  },
   { id: 'id-buzz', model: 'VW ID.Buzz', variant: 'Pro (kurzer Radstand)', consumptionKwh100km: 23.3, consumptionWltpKwh100km: 19.1, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/vw/vw-id-buzz/', purchasePriceEur: 60821 },
-  { id: 'corsa-electric', model: 'Opel Corsa Electric', variant: 'Edition (46 kWh)', consumptionKwh100km: 18.8, consumptionWltpKwh100km: 15.8, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/opel/opel-corsa-electric/', purchasePriceEur: 30440 },
+  {
+    id: 'corsa-electric',
+    model: 'Opel Corsa Electric',
+    variant: 'Edition (46 kWh)',
+    consumptionKwh100km: 18.8,
+    consumptionWltpKwh100km: 15.8,
+    consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/opel/opel-corsa-electric/',
+    purchasePriceEur: 30440,
+    // Realverbrauch aus Ecotest der GS-Ausstattung (identischer Antrieb/Akku wie Edition Long Range).
+    largeBattery: {
+      variant: 'Edition Long Range (54 kWh)',
+      consumptionKwh100km: 16.5,
+      consumptionWltpKwh100km: 14.2,
+      purchasePriceEur: 31940,
+      consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/AT6417_opel-corsa-electric-long-range-54-kwh-gs/opel-corsa-electric-long-range-54-kwh-gs.pdf'
+    }
+  },
   { id: 'astra-electric', model: 'Opel Astra Electric', variant: 'Edition (58 kWh)', consumptionKwh100km: 16.5, consumptionWltpKwh100km: 15.3, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/ecotest/details/4737/opel-astra-electric-gs/', purchasePriceEur: 37990 },
-  { id: '500e', model: 'Fiat 500e', variant: 'Pop (23,8 kWh)', consumptionKwh100km: 15.9, consumptionWltpKwh100km: 13, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/fiat/fiat-500-elektro/', purchasePriceEur: 24990 },
+  {
+    id: '500e',
+    model: 'Fiat 500e',
+    variant: 'Pop (23,8 kWh)',
+    consumptionKwh100km: 15.9,
+    consumptionWltpKwh100km: 13,
+    consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/fiat/fiat-500-elektro/',
+    purchasePriceEur: 24990,
+    // Realverbrauch aus Ecotest der La-Prima-Ausstattung (identischer 42-kWh-Antrieb wie Pop 42 kWh).
+    largeBattery: {
+      variant: 'Pop (42 kWh)',
+      consumptionKwh100km: 17.1,
+      consumptionWltpKwh100km: 13.9,
+      purchasePriceEur: 30990,
+      consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/at6342-fiat-500e-42-kwh-la-prima/fiat-500e-42-kwh-la-prima.pdf'
+    }
+  },
   { id: 'cooper-e', model: 'Mini Cooper E', variant: 'Essential (40,7 kWh)', consumptionKwh100km: 17.1, consumptionWltpKwh100km: 13.8, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/mini/mini-cooper-electric/', purchasePriceEur: 32900 },
-  { id: 'kona-elektro', model: 'Hyundai Kona Elektro', variant: 'Select (49 kWh)', consumptionKwh100km: 18.8, consumptionWltpKwh100km: 14.6, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/hyundai/hyundai-kona-elektro/', purchasePriceEur: 38340 },
-  { id: 'r5', model: 'Renault 5 E-Tech', variant: 'Evolution (40 kWh)', consumptionKwh100km: 17.3, consumptionWltpKwh100km: 14.4, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/renault/renault-r5/', purchasePriceEur: 26290 },
-  { id: 'enyaq', model: 'Skoda Enyaq', variant: 'Essence 60', consumptionKwh100km: 18.8, consumptionWltpKwh100km: 15, consumptionUrl: 'https://www.spritmonitor.de/en/overview/45-Skoda/1881-Enyaq.html', purchasePriceEur: 43490 },
+  {
+    id: 'kona-elektro',
+    model: 'Hyundai Kona Elektro',
+    variant: 'Select (49 kWh)',
+    consumptionKwh100km: 18.8,
+    consumptionWltpKwh100km: 14.6,
+    consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/hyundai/hyundai-kona-elektro/',
+    purchasePriceEur: 38340,
+    // Kein unabhängiger Ecotest verfügbar - Realverbrauch als Näherung aus WLTP-Wert übernommen.
+    largeBattery: {
+      variant: 'Select Long Range (65,4 kWh)',
+      consumptionKwh100km: 14.7,
+      consumptionWltpKwh100km: 14.7,
+      purchasePriceEur: 41340,
+      consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/hyundai/kona/2generation/350837/'
+    }
+  },
+  {
+    id: 'r5',
+    model: 'Renault 5 E-Tech',
+    variant: 'Evolution (40 kWh)',
+    consumptionKwh100km: 17.3,
+    consumptionWltpKwh100km: 14.4,
+    consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/renault/renault-r5/',
+    purchasePriceEur: 26290,
+    largeBattery: {
+      variant: 'Evolution (52 kWh)',
+      consumptionKwh100km: 17.3,
+      consumptionWltpKwh100km: 14.4,
+      purchasePriceEur: 29290,
+      consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/renault/renault-r5/'
+    }
+  },
+  {
+    id: 'enyaq',
+    model: 'Skoda Enyaq',
+    variant: 'Essence 60',
+    consumptionKwh100km: 18.8,
+    consumptionWltpKwh100km: 15,
+    consumptionUrl: 'https://www.spritmonitor.de/en/overview/45-Skoda/1881-Enyaq.html',
+    purchasePriceEur: 43490,
+    // Kein Ecotest für die RWD-85-Variante verfügbar - Realverbrauch als Näherung von der (nur als AWD "85x"
+    // getesteten) baugleichen 77-kWh-Batterie übernommen, Preis/WLTP gelten für die RWD-Version "85".
+    largeBattery: {
+      variant: 'Essence 85 (77 kWh)',
+      consumptionKwh100km: 18.9,
+      consumptionWltpKwh100km: 15.2,
+      purchasePriceEur: 50450,
+      consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/skoda/enyaq/1generation-facelift/350856/'
+    }
+  },
   { id: 'cla-250e', model: 'Mercedes CLA 250+', variant: '', consumptionKwh100km: 13.4, consumptionWltpKwh100km: 12.3, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/mercedes-benz/mercedes-cla-test/', purchasePriceEur: 55858 },
   { id: 'ix1', model: 'BMW iX1', variant: 'eDrive20', consumptionKwh100km: 22.5, consumptionWltpKwh100km: 15.8, consumptionUrl: 'https://www.auto-motor-und-sport.de/test/bmw-ix1-edrive20-vs-vw-id-4-pro-performance-v1/technische-daten/', purchasePriceEur: 49400 },
   { id: 'a6-etron', model: 'Audi A6 e-tron', variant: 'Sportback', consumptionKwh100km: 18, consumptionWltpKwh100km: 13.6, consumptionUrl: 'https://www.firmenauto.de/fahrzeuge/pkw/test-audi-a6-e-tron-businesslimousine-mit-elektro-power/', purchasePriceEur: 62800 },
-  { id: 'elroq', model: 'Skoda Elroq', variant: '50 Tour', consumptionKwh100km: 18, consumptionWltpKwh100km: 15.7, consumptionUrl: 'https://www.autohaus.de/nachrichten/fahrberichte/neuer-skoda-elroq-im-test-mit-netz-und-doppeltem-boden-3607037', purchasePriceEur: 33900 },
+  {
+    id: 'elroq',
+    model: 'Skoda Elroq',
+    variant: '50 Tour',
+    consumptionKwh100km: 18,
+    consumptionWltpKwh100km: 15.7,
+    consumptionUrl: 'https://www.autohaus.de/nachrichten/fahrberichte/neuer-skoda-elroq-im-test-mit-netz-und-doppeltem-boden-3607037',
+    purchasePriceEur: 33900,
+    largeBattery: {
+      variant: '85 Selection (77 kWh)',
+      consumptionKwh100km: 18.2,
+      consumptionWltpKwh100km: 15.4,
+      purchasePriceEur: 46890,
+      consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/at6474-skoda-elroq-85/skoda-elroq-85.pdf'
+    }
+  },
   { id: 'born', model: 'Cupra Born', variant: '58 kWh (190 PS)', consumptionKwh100km: 17, consumptionWltpKwh100km: 14.2, consumptionUrl: 'https://www.spritmonitor.de/en/detail/1348152.html', purchasePriceEur: 39990 },
   { id: 'tavascan', model: 'Cupra Tavascan', variant: '58 kWh (190 PS)', consumptionKwh100km: 20, consumptionWltpKwh100km: 15.4, purchasePriceEur: 49900 },
   { id: 'spring', model: 'Dacia Spring', variant: 'Expression (65 PS)', consumptionKwh100km: 16.7, consumptionWltpKwh100km: 13.2, consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/at6497-dacia-spring-electric-65-expression/dacia-spring-electric-65-expression.pdf', purchasePriceEur: 18700 },
   { id: 'ix3', model: 'BMW iX3', variant: '40 (82,6 kWh)', consumptionKwh100km: 16.2, consumptionWltpKwh100km: 14.7, consumptionUrl: 'https://motorblock.at/2026/08/07/bmw-ix3-40-test-oesterreich/', purchasePriceEur: 63400 },
-  { id: 'i4', model: 'BMW i4', variant: 'eDrive35 Gran Coupé', consumptionKwh100km: 25.5, consumptionWltpKwh100km: 14.7, consumptionUrl: 'https://www.auto-motor-und-sport.de/test/bmw-i4-edrive35-gran-coupe/technische-daten/', purchasePriceEur: 57500 },
+  {
+    id: 'i4',
+    model: 'BMW i4',
+    variant: 'eDrive35 Gran Coupé',
+    consumptionKwh100km: 25.5,
+    consumptionWltpKwh100km: 14.7,
+    consumptionUrl: 'https://www.auto-motor-und-sport.de/test/bmw-i4-edrive35-gran-coupe/technische-daten/',
+    purchasePriceEur: 57500,
+    // TODO: Realverbrauch nicht zweifelsfrei mit einem konkreten Ecotest-Link belegt - vor Live-Schaltung
+    // gegenprüfen (Preis/WLTP sind über den offiziellen BMW-Preislisten-Artikel abgesichert).
+    largeBattery: {
+      variant: 'eDrive40 (84 kWh)',
+      consumptionKwh100km: 20.5,
+      consumptionWltpKwh100km: 14.9,
+      purchasePriceEur: 60600,
+      consumptionUrl: 'https://vision-mobility.de/elektroauto/mittelklasse/bmw-i4-edrive40-voll-elektrisch-60600-euro-reichweite-525-km-340-ps-bestellbar-385134.html'
+    }
+  },
   { id: 'i5', model: 'BMW i5', variant: 'eDrive40', consumptionKwh100km: 19.1, consumptionWltpKwh100km: 14.7, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/bmw/i5/g60-g61/328670/', purchasePriceEur: 70900 },
   { id: 'eqe', model: 'Mercedes EQE', variant: '300 Limousine', consumptionKwh100km: 20, consumptionWltpKwh100km: 15.8, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/mercedes-benz/mercedes-eqe/', purchasePriceEur: 67200 },
   { id: 'q6-etron', model: 'Audi Q6 e-tron', variant: '', consumptionKwh100km: 18.3, consumptionWltpKwh100km: 16, consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/at6477-audi-q6-e-tron-performance/audi-q6-e-tron-performance.pdf', purchasePriceEur: 63500 },
   { id: 'e-c3', model: 'Citroën ë-C3', variant: 'You (30 kWh)', consumptionKwh100km: 19.9, consumptionWltpKwh100km: 16.5, consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/AT6525_citroen-e-c3-you/citroen-e-c3-you.pdf', purchasePriceEur: 20140 },
-  { id: 'grandland-electric', model: 'Opel Grandland Electric', variant: '73 kWh Edition', consumptionKwh100km: 20.2, consumptionWltpKwh100km: 17.8, consumptionUrl: 'https://assets.adac.de/image/upload/v1767076478/ADAC-eV/KOR/Text/PDF/opel-grandland-electric-long-range-97-kwh-gs_wi8khl.pdf', purchasePriceEur: 46950 },
+  {
+    id: 'grandland-electric',
+    model: 'Opel Grandland Electric',
+    variant: '73 kWh Edition',
+    consumptionKwh100km: 20.2,
+    consumptionWltpKwh100km: 17.8,
+    // Hinweis: Die hinterlegte Ecotest-Quelle bezieht sich laut PDF-Titel eigentlich auf die
+    // Long-Range-Variante (97 kWh, GS-Ausstattung) statt auf die 73-kWh-Edition - vor Live-Schaltung prüfen.
+    consumptionUrl: 'https://assets.adac.de/image/upload/v1767076478/ADAC-eV/KOR/Text/PDF/opel-grandland-electric-long-range-97-kwh-gs_wi8khl.pdf',
+    purchasePriceEur: 46950,
+    largeBattery: {
+      variant: 'Long Range Edition (97 kWh)',
+      consumptionKwh100km: 20.2,
+      consumptionWltpKwh100km: 18.6,
+      purchasePriceEur: 46999,
+      consumptionUrl: 'https://assets.adac.de/image/upload/v1767076478/ADAC-eV/KOR/Text/PDF/opel-grandland-electric-long-range-97-kwh-gs_wi8khl.pdf'
+    }
+  },
   { id: 'puma-gen-e', model: 'Ford Puma Gen-E', variant: '46,8 kWh (168 PS)', consumptionKwh100km: 21.8, consumptionWltpKwh100km: 13.1, consumptionUrl: 'https://www.autobild.de/artikel/ford-puma-gen-e-test-28577501.html', purchasePriceEur: 36900 },
-  { id: 'ioniq5', model: 'Hyundai Ioniq 5', variant: '63 kWh (170 PS)', consumptionKwh100km: 18.7, consumptionWltpKwh100km: 15.6, consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/hyundai/hyundai-ioniq-5/', purchasePriceEur: 45750 },
-  { id: 'tesla-model-y', model: 'Tesla Model Y', variant: 'Propulsion RWD', consumptionKwh100km: 19, consumptionWltpKwh100km: 13.1, consumptionUrl: 'https://www.autoscout24.de/informieren/testberichte/tesla/model-y/tesla-model-y-hinterradantrieb-standard-test-2026/', purchasePriceEur: 38970 },
-  { id: 'byd-seal-u', model: 'BYD Seal U', variant: 'Comfort (71,8 kWh)', consumptionKwh100km: 22.2, consumptionWltpKwh100km: 19.9, consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/at6433-byd-seal-u-design/byd-seal-u-design.pdf', purchasePriceEur: 41990 }
+  {
+    id: 'ioniq5',
+    model: 'Hyundai Ioniq 5',
+    variant: '63 kWh (170 PS)',
+    consumptionKwh100km: 18.7,
+    consumptionWltpKwh100km: 15.6,
+    consumptionUrl: 'https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/hyundai/hyundai-ioniq-5/',
+    purchasePriceEur: 45750,
+    // Realverbrauch aus Ecotest der antriebsgleichen UNIQ-2WD-84-kWh-Ausstattung; günstigste aktuell bestellbare
+    // 84-kWh-Ausstattung ist N Line 2WD (Preis/WLTP dieser Ausstattung, größere Räder).
+    largeBattery: {
+      variant: 'CENTRIQ (84 kWh)',
+      consumptionKwh100km: 18.7,
+      consumptionWltpKwh100km: 16,
+      purchasePriceEur: 54100,
+      consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/at6502-hyundai-ioniq-5-84-kwh-uniq-2wd/hyundai-ioniq-5-84-kwh-uniq-2wd.pdf'
+    }
+  },
+  {
+    id: 'tesla-model-y',
+    model: 'Tesla Model Y',
+    variant: 'Propulsion RWD',
+    consumptionKwh100km: 19,
+    consumptionWltpKwh100km: 13.1,
+    consumptionUrl: 'https://www.autoscout24.de/informieren/testberichte/tesla/model-y/tesla-model-y-hinterradantrieb-standard-test-2026/',
+    purchasePriceEur: 38970,
+    largeBattery: {
+      variant: 'Premium Maximum Range (75 kWh)',
+      consumptionKwh100km: 16.4,
+      consumptionWltpKwh100km: 14.2,
+      purchasePriceEur: 50990,
+      consumptionUrl: 'https://assets.adac.de/image/upload/v1762938807/ADAC-eV/KOR/Text/PDF/tesla-model-y-maximum-range_n13ymi.pdf'
+    }
+  },
+  {
+    id: 'byd-seal-u',
+    model: 'BYD Seal U',
+    variant: 'Comfort (71,8 kWh)',
+    consumptionKwh100km: 22.2,
+    consumptionWltpKwh100km: 19.9,
+    // Hinweis: Diese Ecotest-Quelle bezieht sich laut PDF-Titel eigentlich auf die Design-Ausstattung
+    // (87 kWh) statt auf Comfort (71,8 kWh) - vor Live-Schaltung prüfen.
+    consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/at6433-byd-seal-u-design/byd-seal-u-design.pdf',
+    purchasePriceEur: 41990,
+    largeBattery: {
+      variant: 'Design (87 kWh)',
+      consumptionKwh100km: 22.2,
+      consumptionWltpKwh100km: 20.5,
+      purchasePriceEur: 46490,
+      consumptionUrl: 'https://assets.adac.de/image/upload/Autodatenbank/Autotest/at6433-byd-seal-u-design/byd-seal-u-design.pdf'
+    }
+  }
 ]
 
 export const COMBUSTION_VEHICLE_OPTIONS: CombustionVehicleOption[] = [

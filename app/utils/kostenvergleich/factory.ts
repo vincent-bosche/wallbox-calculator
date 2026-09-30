@@ -11,7 +11,8 @@ export function createDefaultState(): KostenvergleichState {
       publicPriceCtKwh: 49,
       homeShare: 0.8,
       annualTaxEur: 0,
-      thgPremiumEur: 300
+      thgPremiumEur: 300,
+      batteryCapacity: 'base'
     },
     combustion: {
       vehicleName: 'VW Golf',

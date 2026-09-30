@@ -1,7 +1,26 @@
 <script setup lang="ts">
 import { THG_PREMIUM_QUICK_VALUES } from '~/utils/kostenvergleich/constants'
+import { VEHICLE_PAIR_PRESETS } from '~/utils/kostenvergleich/presets'
 
-const { state } = useKostenvergleich()
+const { state, selectedPairId, selectEvBatteryCapacity } = useKostenvergleich()
+
+const selectedEvPreset = computed(() => VEHICLE_PAIR_PRESETS.find(p => p.id === selectedPairId.value)?.ev)
+
+const activeEvVariant = computed(() => {
+  if (state.value.ev.batteryCapacity === 'large' && selectedEvPreset.value?.largeBattery) {
+    return selectedEvPreset.value.largeBattery
+  }
+  return selectedEvPreset.value
+})
+
+const batteryCapacityOptions = computed(() => {
+  const preset = selectedEvPreset.value
+  if (!preset?.largeBattery) return []
+  return [
+    { label: preset.variant || 'Standard', value: 'base' as const },
+    { label: preset.largeBattery.variant, value: 'large' as const }
+  ]
+})
 
 const eur = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
 </script>
@@ -10,7 +29,8 @@ const eur = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR',
   <UCard>
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-        <h2 class="text-lg font-semibold text-highlighted">
+        <h2 class="flex items-center gap-2 text-lg font-semibold text-highlighted">
+          <UIcon name="i-lucide-zap" class="size-5 shrink-0" />
           {{ state.ev.vehicleName }}
         </h2>
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
@@ -34,6 +54,15 @@ const eur = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR',
 
       <template #content>
         <div class="space-y-5 pt-4">
+          <UFormField v-if="batteryCapacityOptions.length" label="Batteriekapazität">
+            <URadioGroup
+              :model-value="state.ev.batteryCapacity"
+              orientation="horizontal"
+              :items="batteryCapacityOptions"
+              @update:model-value="selectEvBatteryCapacity"
+            />
+          </UFormField>
+
           <UFormField label="Kaufpreis / UVP (€)">
             <UInputNumber
               v-model="state.ev.purchasePriceEur"
@@ -56,6 +85,18 @@ const eur = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR',
               size="sm"
               class="w-40"
             />
+            <p v-if="activeEvVariant" class="mt-1 text-xs text-muted">
+              Testverbrauch:
+              <a
+                v-if="activeEvVariant.consumptionUrl"
+                :href="activeEvVariant.consumptionUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline hover:text-highlighted"
+              >{{ activeEvVariant.consumptionKwh100km }} kWh/100 km</a>
+              <span v-else>{{ activeEvVariant.consumptionKwh100km }} kWh/100 km</span>
+              · WLTP: {{ activeEvVariant.consumptionWltpKwh100km }} kWh/100 km
+            </p>
           </UFormField>
 
           <UFormField label="KFZ-Steuer (€/Jahr)" description="E-Autos aktuell i. d. R. steuerbefreit.">

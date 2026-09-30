@@ -9,6 +9,8 @@ export interface EvInput {
   annualTaxEur: number
   thgPremiumEur: number
   powerPs?: number
+  // Welche Batteriekapazität des gewählten Presets aktiv ist (falls das Modell eine Long-Range-Variante hat).
+  batteryCapacity: 'base' | 'large'
 }
 
 export interface CombustionInput {

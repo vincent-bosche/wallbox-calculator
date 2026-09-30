@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SeasonComparisonResult } from '~/types/planner'
+import type { HourlySeriesResult, SeasonComparisonResult } from '~/types/planner'
 import { computeDaylightRange } from '~/utils/planner/daylight'
 import { diagnoseBottleneck } from '~/utils/planner/diagnostics'
 import { CONNECTION_CLASSES, CONNECTION_CLASS_LABELS, SEASON_LABELS } from '~/utils/planner/constants'
@@ -30,6 +30,42 @@ const defaultConnectionKw = computed(() =>
 
 function classResult(connectionKw: number) {
   return comparisonResult.value.byConnectionClass.find(c => c.connectionKw === connectionKw)!
+}
+
+// Durchschnittliche Ladeleistung während der tatsächlichen Ladephasen unter "Smart" - zur
+// Einordnung, wie stark "Smart" die Anschlussleistung ggü. der vollen Anschlussklasse tatsächlich
+// drosselt. Kein fester Deckel: pro Stunde richtet sich die Leistung nach dem jeweils aktuellen
+// PV-Überschuss (+ Akku), siehe simulation.ts.
+function averageSmartPowerKwFromHourly(hourly: HourlySeriesResult): { energyKwh: number, hours: number } {
+  let energyKwh = 0
+  let hours = 0
+  const { smartCarKwh, smartBatteryByHour } = hourly
+  for (let h = 0; h < smartCarKwh.length; h++) {
+    const draw = smartCarKwh[h]! + smartBatteryByHour[h]!
+    if (draw > 0.0001) {
+      energyKwh += draw
+      hours++
+    }
+  }
+  return { energyKwh, hours }
+}
+
+// Über alle drei Saisons gemittelt - für den Hinweis in der "Kostenersparnis durch Smart"-Info.
+function averageSmartPowerKw(connectionKw: number): number {
+  let energyKwh = 0
+  let hours = 0
+  for (const s of classResult(connectionKw).seasons) {
+    const r = averageSmartPowerKwFromHourly(s.hourly)
+    energyKwh += r.energyKwh
+    hours += r.hours
+  }
+  return hours > 0 ? energyKwh / hours : 0
+}
+
+// Nur für eine einzelne Saison - für die Legende des jeweiligen Tagesverlauf-Diagramms.
+function seasonAverageSmartPowerKw(s: SeasonComparisonResult): number {
+  const { energyKwh, hours } = averageSmartPowerKwFromHourly(s.hourly)
+  return hours > 0 ? energyKwh / hours : 0
 }
 
 // Fester Anzeigebereich für alle drei Saison-Diagramme einer Anschlussklasse (Sommer-Tag, da
@@ -148,6 +184,12 @@ function segments(s: SeasonComparisonResult) {
                 <FormulaInfo title="Kostenersparnis durch Smart">
                   <p><code>Netzbezug-Ersparnis durch Smart (kWh/Jahr) × Strompreis (ct/kWh) ÷ 100</code>.</p>
                   <p>Eine größere Anschlussklasse bedeutet nicht automatisch mehr Ersparnis - "Smart" deckelt die Ladeleistung ohnehin auf den aktuellen PV-Überschuss. Bei knappem stündlichem Überschuss kann Schuko/1-phasig ähnlich gut oder besser abschneiden, siehe Vergleichswert darunter.</p>
+                  <p>
+                    Bei {{ item.value }} kW drosselt Smart die Ladeleistung während der Ladephasen auf
+                    durchschnittlich {{ averageSmartPowerKw(item.value).toFixed(1) }} kW, um einen möglichst hohen
+                    Eigenverbrauch zu erzielen - der tatsächliche Wert schwankt stundenweise mit dem
+                    PV-Überschuss (+ Akku) und ist kein fester Deckel.
+                  </p>
                 </FormulaInfo>
               </p>
               <p class="mt-1 text-2xl font-semibold text-highlighted">
@@ -190,7 +232,13 @@ function segments(s: SeasonComparisonResult) {
                 </UBadge>
                 <span class="text-muted">{{ bottleneck(s).detail }}</span>
               </div>
-              <PvUsageChart :hourly="s.hourly" :range="summerRange(item.value)" class="pt-1" />
+              <PvUsageChart
+                :hourly="s.hourly"
+                :range="summerRange(item.value)"
+                :connection-kw="item.value"
+                :avg-smart-power-kw="seasonAverageSmartPowerKw(s)"
+                class="pt-1"
+              />
             </div>
           </div>
 

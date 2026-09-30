@@ -2,7 +2,7 @@
 import type { SeasonKey } from '~/types/planner'
 import { SEASON_LABELS, SEASONS } from '~/utils/planner/constants'
 
-const { state, seasonResults } = useWallboxPlanner()
+const { state, seasonResults, restoreStateFromUrl, syncStateToUrl } = useWallboxPlanner()
 
 const seasonTabItems = SEASONS.map(season => ({
   label: SEASON_LABELS[season],
@@ -23,11 +23,25 @@ const ergebnisSectionEl = useTemplateRef('ergebnisSection')
 const isErgebnisSectionVisible = ref(false)
 
 onMounted(() => {
+  restoreStateFromUrl()
+
+  // Debounced, damit nicht bei jedem Tastendruck/Slider-Schritt ein History-Eintrag geschrieben wird.
+  let syncTimeout: ReturnType<typeof setTimeout> | undefined
+  const stopStateWatch = watch(state, () => {
+    clearTimeout(syncTimeout)
+    syncTimeout = setTimeout(syncStateToUrl, 400)
+  }, { deep: true })
+
   const observer = new IntersectionObserver(([entry]) => {
     isErgebnisSectionVisible.value = entry?.isIntersecting ?? false
   })
   if (ergebnisSectionEl.value) observer.observe(ergebnisSectionEl.value)
-  onUnmounted(() => observer.disconnect())
+
+  onUnmounted(() => {
+    observer.disconnect()
+    stopStateWatch()
+    clearTimeout(syncTimeout)
+  })
 })
 </script>
 
@@ -73,6 +87,8 @@ onMounted(() => {
     </section>
 
     <ComparisonSection v-if="state.pv.enabled" />
+
+    <FaqSection />
 
     <Transition
       enter-active-class="transition-transform duration-200 ease-out"

@@ -124,6 +124,7 @@ interface DaySimulationResult {
   batteryKwh: number
   pvToCarByHour: number[]
   batteryToCarByHour: number[]
+  carTotalByHour: number[]
 }
 
 type SimulationMode = 'naive' | 'smart' | 'potential'
@@ -154,6 +155,7 @@ function runDaySimulation(state: PlannerState, season: SeasonKey, mode: Simulati
   let batteryKwh = 0
   const pvToCarByHour = new Array(HOURS_PER_DAY).fill(0)
   const batteryToCarByHour = new Array(HOURS_PER_DAY).fill(0)
+  const carTotalByHour = new Array(HOURS_PER_DAY).fill(0)
 
   const naiveSchedules = mode === 'naive'
     ? new Map(groups.map(group => [
@@ -209,6 +211,7 @@ function runDaySimulation(state: PlannerState, season: SeasonKey, mode: Simulati
       gridKwh += stillNeeded - batteryToCar
       pvToCarByHour[h]! += pvToCar
       batteryToCarByHour[h]! += batteryToCar
+      carTotalByHour[h]! += carDraw
       if (mode === 'smart') remaining.set(vehicle.id, remaining.get(vehicle.id)! - carDraw)
     }
 
@@ -225,7 +228,7 @@ function runDaySimulation(state: PlannerState, season: SeasonKey, mode: Simulati
     }
   }
 
-  return { gridKwh, pvDirectKwh, batteryKwh, pvToCarByHour, batteryToCarByHour }
+  return { gridKwh, pvDirectKwh, batteryKwh, pvToCarByHour, batteryToCarByHour, carTotalByHour }
 }
 
 // Zuhause-Stunden über alle Fahrzeuge hinweg (mind. eines zuhause) - für die Hintergrund-Bänder
@@ -241,6 +244,7 @@ function computeHourlySeries(state: PlannerState, season: SeasonKey, naive: DayS
     householdLoadKwh: householdHourlyLoadKwh(state),
     homeHours: anyoneHomeHours(state),
     naiveCarKwh: naive.pvToCarByHour,
+    naiveCarTotalKwh: naive.carTotalByHour,
     smartCarKwh: smart.pvToCarByHour,
     smartBatteryByHour: smart.batteryToCarByHour
   }
