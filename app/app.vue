@@ -41,6 +41,14 @@ const navItems = [
       <template #right>
         <UColorModeButton />
       </template>
+
+      <template #body>
+        <UNavigationMenu
+          :items="navItems"
+          orientation="vertical"
+          class="-mx-2.5"
+        />
+      </template>
     </UHeader>
 
     <UMain>
