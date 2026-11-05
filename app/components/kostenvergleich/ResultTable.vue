@@ -36,7 +36,7 @@ const runningCostRows = computed(() => [
 const purchaseRows = computed(() => [
   { label: 'Kaufpreis (UVP)', ev: state.value.ev.purchasePriceEur, combustion: state.value.combustion.purchasePriceEur },
   ...highlightPoints.value.map(point => ({
-    label: `Gesamtkosten nach ${point.year} Jahren (inkl. Kaufpreis)`,
+    label: `Gesamt nach ${point.year} Jahren`,
     ev: point.evCumulativeEur,
     combustion: point.combustionCumulativeEur,
     emphasize: true
@@ -66,11 +66,6 @@ const breakEvenExtras = computed(() => {
 
 <template>
   <UCard>
-    <template #header>
-      <h2 class="text-lg font-semibold text-highlighted">
-        Ergebnis
-      </h2>
-    </template>
 
     <div class="space-y-6">
       <div>

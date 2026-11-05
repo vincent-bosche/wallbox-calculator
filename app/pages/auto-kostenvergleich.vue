@@ -33,7 +33,7 @@ onMounted(() => {
       <h1 class="text-4xl font-bold text-highlighted sm:text-3xl mb-5">
         Auto Kostenvergleich
       </h1>
-      <p class="mt-1 max-w-2xl text-muted">
+      <p class="mt-1 text-muted">
         Vergleiche Kaufpreis und laufende Kosten von Elektroauto und Verbrenner – Energiekosten, KFZ-Steuer
         und THG-Prämie, hochgerechnet auf 5 und 7 Jahre, inkl. Break-even-Berechnung.
         Verbrauchs- und Steuerwerte basieren auf realen Testverbrauchswerten (ADAC, Fachmagazine, spritmonitor.de)
@@ -43,89 +43,92 @@ onMounted(() => {
       </p>
     </div>
 
-    <VehiclePicker />
+    <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div class="space-y-6">
+        <VehiclePicker />
 
-    <div class="grid gap-6 lg:grid-cols-2">
-      <EvSection />
-      <CombustionSection />
-    </div>
+        <div class="grid gap-6">
+          <EvSection />
+          <CombustionSection />
+        </div>
 
-    <UCard>
-      <div class="space-y-5">
-        <UFormField label="Jahresfahrleistung (km)">
-          <QuickSelectField
-            v-model="state.annualDistanceKm"
-            :options="ANNUAL_DISTANCE_QUICK_VALUES"
-            unit="km"
-            :min="1000"
-            :max="100000"
-            :step="500"
-          />
-        </UFormField>
+        <UCard>
+          <div class="space-y-5">
+            <UFormField label="Jahresfahrleistung (km)">
+              <QuickSelectField
+                v-model="state.annualDistanceKm"
+                :options="ANNUAL_DISTANCE_QUICK_VALUES"
+                unit="km"
+                :min="1000"
+                :max="100000"
+                :step="500"
+              />
+            </UFormField>
 
-        <USeparator />
+            <USeparator />
 
-        <div>
-          <p class="mb-3 text-sm font-medium text-highlighted">
-            Strompreis &amp; Anteil zuhause
-          </p>
-          <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-            <div class="space-y-5">
-              <UFormField label="Zu Hause (ct/kWh)">
-                <QuickSelectField
-                  v-model="state.ev.homePriceCtKwh"
-                  :options="HOME_PRICE_QUICK_VALUES"
-                  unit="ct/kWh"
-                  :min="10"
-                  :max="80"
-                  :step="1"
-                />
-              </UFormField>
+            <div>
+              <p class="mb-3 text-sm font-medium text-highlighted">
+                Strompreis &amp; Anteil zuhause
+              </p>
+              <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+                <div class="space-y-5">
+                  <UFormField label="Zu Hause (ct/kWh)">
+                    <QuickSelectField
+                      v-model="state.ev.homePriceCtKwh"
+                      :options="HOME_PRICE_QUICK_VALUES"
+                      unit="ct/kWh"
+                      :min="10"
+                      :max="80"
+                      :step="1"
+                    />
+                  </UFormField>
 
-              <UFormField :label="`Anteil zuhause geladen: ${homeSharePercent} %`">
-                <USlider v-model="state.ev.homeShare" :min="0" :max="1" :step="0.05" />
-              </UFormField>
+                  <UFormField :label="`Anteil zuhause geladen: ${homeSharePercent} %`">
+                    <USlider v-model="state.ev.homeShare" :min="0" :max="1" :step="0.05" />
+                  </UFormField>
+                </div>
+
+                <UFormField label="Unterwegs (ct/kWh)" description="Öffentliche Ladesäule/Schnelllader.">
+                  <QuickSelectField
+                    v-model="state.ev.publicPriceCtKwh"
+                    :options="PUBLIC_PRICE_QUICK_VALUES"
+                    unit="ct/kWh"
+                    :min="10"
+                    :max="100"
+                    :step="1"
+                  />
+                </UFormField>
+              </div>
             </div>
 
-            <UFormField label="Unterwegs (ct/kWh)" description="Öffentliche Ladesäule/Schnelllader.">
+            <USeparator />
+
+            <UFormField label="Kraftstoffpreis (€/l)">
               <QuickSelectField
-                v-model="state.ev.publicPriceCtKwh"
-                :options="PUBLIC_PRICE_QUICK_VALUES"
-                unit="ct/kWh"
-                :min="10"
-                :max="100"
-                :step="1"
+                v-model="state.combustion.fuelPriceEurL"
+                :options="FUEL_PRICE_QUICK_VALUES"
+                unit="€"
+                :min="1"
+                :max="3"
+                :step="0.01"
+                :decimals="2"
               />
             </UFormField>
           </div>
-        </div>
-
-        <USeparator />
-
-        <UFormField label="Kraftstoffpreis (€/l)">
-          <QuickSelectField
-            v-model="state.combustion.fuelPriceEurL"
-            :options="FUEL_PRICE_QUICK_VALUES"
-            unit="€"
-            :min="1"
-            :max="3"
-            :step="0.01"
-            :decimals="2"
-          />
-        </UFormField>
+        </UCard>
       </div>
-    </UCard>
 
-    <section ref="ergebnisSection" class="space-y-4">
-      <USeparator />
-      <h2 class="text-3xl font-semibold text-highlighted">
-        Ergebnis
-      </h2>
-      <ResultTable />
-      <UCard>
-        <CostChart />
-      </UCard>
-    </section>
+      <section ref="ergebnisSection" class="space-y-4 lg:sticky lg:top-20">
+        <h2 class="text-3xl font-semibold text-highlighted">
+          Ergebnis
+        </h2>
+        <ResultTable />
+        <UCard>
+          <CostChart />
+        </UCard>
+      </section>
+    </div>
 
     <Transition
       enter-active-class="transition-transform duration-200 ease-out"

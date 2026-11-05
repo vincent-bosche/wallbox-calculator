@@ -108,20 +108,5 @@ const YEAR_TICKS = computed(() => points.value.map(p => p.year))
         Break-even
       </div>
     </div>
-
-    <div class="mt-3 grid gap-2 sm:grid-cols-2">
-      <div
-        v-for="point in highlightPoints"
-        :key="point.year"
-        class="rounded-md bg-elevated px-3 py-2 text-sm"
-      >
-        <p class="text-xs uppercase tracking-wide text-muted">
-          Nach {{ point.year }} Jahren
-        </p>
-        <p class="text-highlighted">
-          {{ state.ev.vehicleName }} {{ formatEur(point.evCumulativeEur) }} <br> {{ state.combustion.vehicleName }} {{ formatEur(point.combustionCumulativeEur) }}
-        </p>
-      </div>
-    </div>
   </div>
 </template>

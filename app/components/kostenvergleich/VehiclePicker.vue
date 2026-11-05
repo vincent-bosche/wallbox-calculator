@@ -31,7 +31,7 @@ function formatVariant(vehicle: EvVehicleOption | CombustionVehicleOption) {
 <template>
   <section class="space-y-4">
     <div>
-      <h2 class="text-xl font-semibold text-highlighted">
+      <h2 class="text-3xl font-semibold text-highlighted mb-4">
         Fahrzeug-Auswahl
       </h2>
       <p class="text-sm text-muted">
